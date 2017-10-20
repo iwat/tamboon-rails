@@ -4,8 +4,10 @@ $(document).on("ready", function () {
 
     var form = $(this);
 
-    // Ensure that the token field is empty first.
-    form.find("[name=omise_token]").val(null);
+    // If token already exists, it can be used immediately.
+    if (form.find("[name=omise_token]").val() != "") {
+      return true;
+    }
 
     // Disable the submit button to avoid repeated click.
     form.find("input[type=submit]").prop("disabled", true);
