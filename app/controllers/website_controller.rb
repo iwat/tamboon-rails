@@ -1,27 +1,17 @@
 class WebsiteController < ApplicationController
+  before_filter :validate_token, only: %i(donate)
+  before_filter :validate_amount, only: %i(donate)
+
   def index
     @token = nil
   end
 
   def donate
     charity = Charity.find_by(id: params[:charity])
-    if params[:omise_token].blank?
-      @token = nil
-      flash.now.alert = t(".failure")
-      render :index
-      return
-    end
-
-    if params[:amount].blank? || params[:amount].to_i <= 20
-      @token = retrieve_token(params[:omise_token])
-      flash.now.alert = t(".failure")
-      render :index
-      return
-    end
 
     unless charity
       @token = retrieve_token(params[:omise_token])
-      flash.now.alert = t(".failure")
+      flash.now.alert = "[no_charity] #{t('.failure')}"
       render :index
       return
     end
@@ -44,16 +34,9 @@ class WebsiteController < ApplicationController
       charity.credit_amount(charge.amount)
     end
 
-    if !charity
-      @token = nil
-      flash.now.alert = t(".failure")
-      render :index
-      return
-    end
-
     unless charge.paid
       @token = nil
-      flash.now.alert = t(".failure")
+      flash.now.alert = "[pay_error] #{t('.failure')}"
       render :index
       return
     end
@@ -79,5 +62,21 @@ class WebsiteController < ApplicationController
     else
       Omise::Token.retrieve(token)
     end
+  end
+
+  def validate_token
+    return if params[:omise_token].present?
+
+    @token = nil
+    flash.now.alert = "[no_token] #{t('.failure')}"
+    render :index
+  end
+
+  def validate_amount
+    return if params[:amount].present? && params[:amount].to_i > 20
+
+    @token = retrieve_token(params[:omise_token])
+    flash.now.alert = "[invalid_amount] #{t('.failure')}"
+    render :index
   end
 end

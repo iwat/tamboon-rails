@@ -11,7 +11,7 @@ class WebsiteTest < ActionDispatch::IntegrationTest
     post donate_path, amount: "100", omise_token: "tokn_X", charity: ""
 
     assert_template :index
-    assert_equal t("website.donate.failure"), flash.now[:alert]
+    assert_equal "[no_charity] #{t('website.donate.failure')}", flash.now[:alert]
   end
 
   test "that someone can't donate 0 to a charity" do
@@ -19,7 +19,7 @@ class WebsiteTest < ActionDispatch::IntegrationTest
     post donate_path, amount: "0", omise_token: "tokn_X", charity: charity.id
 
     assert_template :index
-    assert_equal t("website.donate.failure"), flash.now[:alert]
+    assert_equal "[invalid_amount] #{t('website.donate.failure')}", flash.now[:alert]
   end
 
   test "that someone can't donate less than 20 to a charity" do
@@ -27,7 +27,7 @@ class WebsiteTest < ActionDispatch::IntegrationTest
     post donate_path, amount: "19", omise_token: "tokn_X", charity: charity.id
 
     assert_template :index
-    assert_equal t("website.donate.failure"), flash.now[:alert]
+    assert_equal "[invalid_amount] #{t('website.donate.failure')}", flash.now[:alert]
   end
 
   test "that someone can't donate without a token" do
@@ -35,7 +35,7 @@ class WebsiteTest < ActionDispatch::IntegrationTest
     post donate_path, amount: "100", charity: charity.id
 
     assert_template :index
-    assert_equal t("website.donate.failure"), flash.now[:alert]
+    assert_equal "[no_token] #{t('website.donate.failure')}", flash.now[:alert]
   end
 
   test "that someone can donate to a charity" do
@@ -57,7 +57,7 @@ class WebsiteTest < ActionDispatch::IntegrationTest
     post donate_path, amount: "999", omise_token: "tokn_X", charity: charity.id
 
     assert_template :index
-    assert_equal t("website.donate.failure"), flash.now[:alert]
+    assert_equal "[pay_error] #{t('website.donate.failure')}", flash.now[:alert]
   end
 
   test "that we can donate to a charity at random" do
