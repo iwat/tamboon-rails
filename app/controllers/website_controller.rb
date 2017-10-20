@@ -30,10 +30,7 @@ class WebsiteController < ApplicationController
       return
     end
 
-    if charge.paid
-      charity.credit_amount(charge.amount)
-    end
-
+    charity.credit_amount(charge.amount)
     flash.notice = t(".success")
     redirect_to root_path
   end
