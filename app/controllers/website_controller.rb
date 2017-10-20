@@ -23,15 +23,15 @@ class WebsiteController < ApplicationController
       description: "Donation to #{charity.name} [#{charity.id}]",
     })
 
-    if charge.paid
-      charity.credit_amount(charge.amount)
-    end
-
     unless charge.paid
       @token = nil
       flash.now.alert = "[pay_error] #{t('.failure')}"
       render :index
       return
+    end
+
+    if charge.paid
+      charity.credit_amount(charge.amount)
     end
 
     flash.notice = t(".success")
