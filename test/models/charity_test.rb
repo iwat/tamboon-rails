@@ -22,4 +22,17 @@ class CharityTest < ActiveSupport::TestCase
 
     assert_equal 20000, charity.reload.total
   end
+
+  test "that random returns random charity" do
+    count = Charity.count
+    samples = Set.new
+
+    # expecting unbias random
+    100.times do
+      samples << Charity.random.id
+      break if samples.size == count
+    end
+
+    assert_equal count, samples.size
+  end
 end

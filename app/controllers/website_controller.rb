@@ -34,7 +34,11 @@ class WebsiteController < ApplicationController
   end
 
   def set_charity
-    @charity = Charity.find_by(id: params[:charity])
+    if params[:charity] == "random"
+      @charity = Charity.random
+    else
+      @charity = Charity.find_by(id: params[:charity])
+    end
 
     unless @charity
       @token = retrieve_token(params[:omise_token])

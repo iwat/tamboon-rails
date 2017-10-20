@@ -77,7 +77,9 @@ class WebsiteTest < ActionDispatch::IntegrationTest
     expected_total = initial_total + 10075
 
     stub_token_retrieve do
-      post donate_path, amount: "100.75", omise_token: "tokn_X", charity: "random"
+      stub_success_charge(10075) do
+        post_via_redirect donate_path, amount: "100.75", omise_token: "tokn_X", charity: "random"
+      end
     end
 
     assert_template :index
