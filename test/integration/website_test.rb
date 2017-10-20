@@ -49,10 +49,10 @@ class WebsiteTest < ActionDispatch::IntegrationTest
   test "that someone can donate to a charity" do
     charity = charities(:children)
     initial_total = charity.total
-    expected_total = initial_total + (100 * 100)
+    expected_total = initial_total + 10025
 
-    stub_success_charge do
-      post_via_redirect donate_path, amount: "100", omise_token: "tokn_X", charity: charity.id
+    stub_success_charge(10025) do
+      post_via_redirect donate_path, amount: "100.25", omise_token: "tokn_X", charity: charity.id
     end
 
     assert_template :index
@@ -74,10 +74,10 @@ class WebsiteTest < ActionDispatch::IntegrationTest
   test "that we can donate to a charity at random" do
     charities = Charity.all
     initial_total = charities.to_a.sum(&:total)
-    expected_total = initial_total + (100 * 100)
+    expected_total = initial_total + 10075
 
     stub_token_retrieve do
-      post donate_path, amount: "100", omise_token: "tokn_X", charity: "random"
+      post donate_path, amount: "100.75", omise_token: "tokn_X", charity: "random"
     end
 
     assert_template :index
@@ -97,9 +97,9 @@ class WebsiteTest < ActionDispatch::IntegrationTest
     end
   end
 
-  def stub_success_charge
+  def stub_success_charge(amount)
     fake_charge = OpenStruct.new({
-      amount: 10000,
+      amount: amount,
       paid:   true,
     })
     Omise::Charge.stub(:create, fake_charge) do

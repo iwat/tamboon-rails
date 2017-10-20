@@ -17,7 +17,7 @@ class WebsiteController < ApplicationController
     end
 
     charge = Omise::Charge.create({
-      amount: params[:amount].to_i * 100,
+      amount: (params[:amount].to_f * 100).to_i,
       currency: "THB",
       card: params[:omise_token],
       description: "Donation to #{charity.name} [#{charity.id}]",
