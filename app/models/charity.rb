@@ -5,10 +5,9 @@ class Charity < ActiveRecord::Base
     find(ids.sample) # not the best optimal but the best brevity
   end
 
-  def credit_amount(amount)
-    with_lock do
-      new_total = total + amount
-      update_attribute :total, new_total
-    end
+  def donate(fund)
+    new_total = total + fund.amount
+    update_attribute :total, new_total
+    fund.capture
   end
 end

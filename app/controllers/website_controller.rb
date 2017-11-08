@@ -8,23 +8,23 @@ class WebsiteController < ApplicationController
   end
 
   def donate
-    charge = Omise::Charge.create({
+    fund = OmiseFundService.create_fund({
       amount: (params[:amount].to_f * 100).to_i,
       currency: "THB",
       card: params[:omise_token],
       description: "Donation to #{@charity.name} [#{@charity.id}]",
     })
 
-    unless charge.paid
-      @token = nil
-      flash.now.alert = "[pay_error] #{t('.failure')}"
-      render :index
-      return
+    @charity.with_lock do
+      @charity.donate(fund)
     end
 
-    @charity.credit_amount(charge.amount)
     flash.notice = t(".success")
     redirect_to root_path
+  rescue => e
+    @token = nil
+    flash.now.alert = e.to_s
+    render :index
   end
 
   private
